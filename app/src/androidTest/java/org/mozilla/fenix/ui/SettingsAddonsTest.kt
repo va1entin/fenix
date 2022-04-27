@@ -97,7 +97,9 @@ class SettingsAddonsTest {
                 cancelInstallAddon()
                 clickInstallAddon(addonName)
                 acceptPermissionToInstallAddon()
-                closeAddonInstallCompletePrompt(addonName, activityTestRule)
+                closeAddonInstallCompletePrompt(addonName
+                    //, activityTestRule
+                )
                 verifyAddonIsInstalled(addonName)
                 verifyEnabledTitleDisplayed()
             }
@@ -111,7 +113,7 @@ class SettingsAddonsTest {
 
         addonsMenu {
             installAddon(addonName)
-            closeAddonInstallCompletePrompt(addonName, activityTestRule)
+            closeAddonInstallCompletePrompt(addonName /*, activityTestRule*/)
             IdlingRegistry.getInstance().unregister(addonsListIdlingResource!!)
         }.openDetailedMenuForAddon(addonName) {
             addonContainerIdlingResource = ViewVisibilityIdlingResource(
@@ -137,7 +139,7 @@ class SettingsAddonsTest {
 
         addonsMenu {
             installAddon(addonName)
-            closeAddonInstallCompletePrompt(addonName, activityTestRule)
+            closeAddonInstallCompletePrompt(addonName/*, activityTestRule*/)
             IdlingRegistry.getInstance().unregister(addonsListIdlingResource!!)
         }.goBack {
         }.openNavigationToolbar {
@@ -157,9 +159,9 @@ class SettingsAddonsTest {
         }.togglePrivateBrowsingMode()
         addonsMenu {
             installAddon(addonName)
-            selectAllowInPrivateBrowsing(activityTestRule)
-            closeAddonInstallCompletePrompt(addonName, activityTestRule)
-            IdlingRegistry.getInstance().unregister(addonsListIdlingResource!!)
+            selectAllowInPrivateBrowsing(/*, activityTestRule*/)
+            closeAddonInstallCompletePrompt(addonName/*, activityTestRule*/)
+            // IdlingRegistry.getInstance().unregister(addonsListIdlingResource!!)
         }.goBack {}
         navigationToolbar {
         }.enterURLAndEnterToBrowser(trackingPage.url) {
@@ -179,7 +181,7 @@ class SettingsAddonsTest {
                     activityTestRule.activity.findViewById(R.id.add_ons_list),
                     1
                 )
-            IdlingRegistry.getInstance().register(addonsListIdlingResource!!)
+           IdlingRegistry.getInstance().register(addonsListIdlingResource!!)
             clickInstallAddon(addonName)
             verifyAddonPermissionPrompt(addonName)
             acceptPermissionToInstallAddon()

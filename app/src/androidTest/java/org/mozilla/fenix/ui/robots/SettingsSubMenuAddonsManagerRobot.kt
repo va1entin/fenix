@@ -22,7 +22,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
@@ -30,12 +29,11 @@ import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.CoreMatchers.not
-import org.mozilla.fenix.HomeActivity
+import org.junit.Assert.assertTrue
 import org.mozilla.fenix.R
-import org.mozilla.fenix.helpers.IdlingResourceHelper.registerAddonInstallingIdlingResource
-import org.mozilla.fenix.helpers.IdlingResourceHelper.unregisterAddonInstallingIdlingResource
 import org.mozilla.fenix.helpers.TestAssetHelper.waitingTime
 import org.mozilla.fenix.helpers.TestHelper.appName
+import org.mozilla.fenix.helpers.TestHelper.packageName
 import org.mozilla.fenix.helpers.TestHelper.scrollToElementByText
 import org.mozilla.fenix.helpers.click
 import org.mozilla.fenix.helpers.ext.waitNotNull
@@ -50,16 +48,20 @@ class SettingsSubMenuAddonsManagerRobot {
     fun clickInstallAddon(addonName: String) = selectInstallAddon(addonName)
 
     fun closeAddonInstallCompletePrompt(
-        addonName: String,
-        activityTestRule: ActivityTestRule<HomeActivity>
+        addonName: String//,
+        //activityTestRule: ActivityTestRule<HomeActivity>
     ) {
         try {
-            assertAddonInstallCompletePrompt(addonName, activityTestRule)
+            assertAddonInstallCompletePrompt(addonName
+               // , activityTestRule
+            )
         } catch (e: IdlingResourceTimeoutException) {
             if (mDevice.findObject(UiSelector().text("Failed to install $addonName")).exists()) {
                 clickInstallAddon(addonName)
                 acceptPermissionToInstallAddon()
-                assertAddonInstallCompletePrompt(addonName, activityTestRule)
+                assertAddonInstallCompletePrompt(addonName
+                    //, activityTestRule
+                )
             }
         }
     }
@@ -79,10 +81,12 @@ class SettingsSubMenuAddonsManagerRobot {
     fun verifyAddonsItems() = assertAddonsItems()
     fun verifyAddonCanBeInstalled(addonName: String) = assertAddonCanBeInstalled(addonName)
 
-    fun selectAllowInPrivateBrowsing(activityTestRule: ActivityTestRule<HomeActivity>) {
-        registerAddonInstallingIdlingResource(activityTestRule)
+    fun selectAllowInPrivateBrowsing(/*activityTestRule: ActivityTestRule<HomeActivity>*/) {
+      //  registerAddonInstallingIdlingResource(activityTestRule)
+        mDevice.findObject(UiSelector().resourceId("$packageName:id/allow_in_private_browsing"))
+            .waitForExists(waitingTime)
         onView(withId(R.id.allow_in_private_browsing)).click()
-        unregisterAddonInstallingIdlingResource(activityTestRule)
+      //  unregisterAddonInstallingIdlingResource(activityTestRule)
     }
 
     class Transition {
@@ -144,8 +148,12 @@ class SettingsSubMenuAddonsManagerRobot {
     }
 
     private fun assertAddonPermissionPrompt(addonName: String) {
-        onView(allOf(withId(R.id.title), withText("Add $addonName?")))
-            .check(matches(isCompletelyDisplayed()))
+        assertTrue(
+            mDevice.findObject(UiSelector().text("Add $addonName?"))
+                .waitForExists(waitingTime)
+        )
+        // onView(allOf(withId(R.id.title), withText("Add $addonName?")))
+        //     .check(matches(isCompletelyDisplayed()))
 
         onView(
             allOf(
@@ -163,11 +171,11 @@ class SettingsSubMenuAddonsManagerRobot {
     }
 
     private fun assertAddonInstallCompletePrompt(
-        addonName: String,
-        activityTestRule: ActivityTestRule<HomeActivity>
+        addonName: String//,
+        //activityTestRule: ActivityTestRule<HomeActivity>
     ) {
-        registerAddonInstallingIdlingResource(activityTestRule)
-
+        //registerAddonInstallingIdlingResource(activityTestRule)
+        mDevice.findObject(UiSelector().textContains("Okay, Got it")).waitForExists(waitingTime)
         onView(
             allOf(
                 withText("Okay, Got it"),
@@ -180,7 +188,7 @@ class SettingsSubMenuAddonsManagerRobot {
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
             .perform(click())
 
-        unregisterAddonInstallingIdlingResource(activityTestRule)
+        //unregisterAddonInstallingIdlingResource(activityTestRule)
     }
 
     private fun assertAddonIsInstalled(addonName: String) {
