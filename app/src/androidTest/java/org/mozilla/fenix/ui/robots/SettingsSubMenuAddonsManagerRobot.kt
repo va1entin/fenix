@@ -8,7 +8,7 @@ package org.mozilla.fenix.ui.robots
 
 import android.widget.RelativeLayout
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.IdlingResourceTimeoutException
+import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.Visibility
@@ -22,6 +22,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
@@ -30,7 +31,10 @@ import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.CoreMatchers.not
 import org.junit.Assert.assertTrue
+import org.mozilla.fenix.HomeActivity
 import org.mozilla.fenix.R
+import org.mozilla.fenix.helpers.IdlingResourceHelper.registerAddonInstallingIdlingResource
+import org.mozilla.fenix.helpers.IdlingResourceHelper.unregisterAddonInstallingIdlingResource
 import org.mozilla.fenix.helpers.TestAssetHelper.waitingTime
 import org.mozilla.fenix.helpers.TestHelper.appName
 import org.mozilla.fenix.helpers.TestHelper.packageName
@@ -48,22 +52,19 @@ class SettingsSubMenuAddonsManagerRobot {
     fun clickInstallAddon(addonName: String) = selectInstallAddon(addonName)
 
     fun closeAddonInstallCompletePrompt(
-        addonName: String//,
-        //activityTestRule: ActivityTestRule<HomeActivity>
+        addonName: String,
+        activityTestRule: ActivityTestRule<HomeActivity>
     ) {
-        try {
-            assertAddonInstallCompletePrompt(addonName
-               // , activityTestRule
-            )
-        } catch (e: IdlingResourceTimeoutException) {
-            if (mDevice.findObject(UiSelector().text("Failed to install $addonName")).exists()) {
-                clickInstallAddon(addonName)
-                acceptPermissionToInstallAddon()
-                assertAddonInstallCompletePrompt(addonName
-                    //, activityTestRule
-                )
-            }
-        }
+        // try {
+            assertAddonInstallCompletePrompt(addonName, activityTestRule)
+        // } catch (e: IdlingResourceTimeoutException) {
+        //     unregisterAddonInstallingIdlingResource(activityTestRule)
+        //     if (mDevice.findObject(UiSelector().text("Failed to install $addonName")).exists()) {
+        //         clickInstallAddon(addonName)
+        //         acceptPermissionToInstallAddon()
+        //         assertAddonInstallCompletePrompt(addonName, activityTestRule)
+        //     }
+        // }
     }
 
     fun verifyAddonIsInstalled(addonName: String) {
@@ -122,16 +123,20 @@ class SettingsSubMenuAddonsManagerRobot {
         }
     }
 
-    private fun installButtonForAddon(addonName: String) =
-        onView(
+    private fun installButtonForAddon(addonName: String): ViewInteraction {
+        scrollToElementByText(addonName)
+        return onView(
             allOf(
                 withContentDescription(R.string.mozac_feature_addons_install_addon_content_description),
                 isDescendantOfA(withId(R.id.add_on_item)),
                 hasSibling(hasDescendant(withText(addonName)))
             )
         )
+    }
 
     private fun selectInstallAddon(addonName: String) {
+        scrollToElementByText(addonName)
+
         mDevice.waitNotNull(
             Until.findObject(By.textContains(addonName)),
             waitingTime
@@ -171,10 +176,10 @@ class SettingsSubMenuAddonsManagerRobot {
     }
 
     private fun assertAddonInstallCompletePrompt(
-        addonName: String//,
-        //activityTestRule: ActivityTestRule<HomeActivity>
+        addonName: String,
+        activityTestRule: ActivityTestRule<HomeActivity>
     ) {
-        //registerAddonInstallingIdlingResource(activityTestRule)
+       registerAddonInstallingIdlingResource(activityTestRule)
         mDevice.findObject(UiSelector().textContains("Okay, Got it")).waitForExists(waitingTime)
         onView(
             allOf(
@@ -188,7 +193,7 @@ class SettingsSubMenuAddonsManagerRobot {
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
             .perform(click())
 
-        //unregisterAddonInstallingIdlingResource(activityTestRule)
+        unregisterAddonInstallingIdlingResource(activityTestRule)
     }
 
     private fun assertAddonIsInstalled(addonName: String) {
