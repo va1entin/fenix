@@ -41,6 +41,7 @@ import org.mozilla.fenix.R
 import org.mozilla.fenix.ext.components
 import org.mozilla.fenix.helpers.Constants.LONG_CLICK_DURATION
 import org.mozilla.fenix.helpers.SessionLoadedIdlingResource
+import org.mozilla.fenix.helpers.TestAssetHelper.pageLoadingTime
 import org.mozilla.fenix.helpers.TestAssetHelper.waitingTime
 import org.mozilla.fenix.helpers.TestHelper.packageName
 import org.mozilla.fenix.helpers.TestHelper.waitForObjects
@@ -100,7 +101,7 @@ class BrowserRobot {
         runWithIdleRes(sessionLoadedIdlingResource) {
             assertTrue(
                 "Page didn't load or doesn't contain the expected text",
-                mDevice.findObject(UiSelector().textContains(expectedText)).waitForExists(waitingTime)
+                mDevice.findObject(UiSelector().textContains(expectedText)).waitForExists(pageLoadingTime)
             )
         }
     }

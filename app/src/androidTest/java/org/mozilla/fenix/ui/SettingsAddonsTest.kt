@@ -18,7 +18,6 @@ import org.mozilla.fenix.ext.settings
 import org.mozilla.fenix.helpers.AndroidAssetDispatcher
 import org.mozilla.fenix.helpers.HomeActivityTestRule
 import org.mozilla.fenix.helpers.RecyclerViewIdlingResource
-import org.mozilla.fenix.helpers.RetryTestRule
 import org.mozilla.fenix.helpers.TestAssetHelper
 import org.mozilla.fenix.helpers.ViewVisibilityIdlingResource
 import org.mozilla.fenix.ui.robots.addonsMenu
@@ -33,13 +32,10 @@ class SettingsAddonsTest {
     private lateinit var mockWebServer: MockWebServer
     private var addonsListIdlingResource: RecyclerViewIdlingResource? = null
     private var addonContainerIdlingResource: ViewVisibilityIdlingResource? = null
+    private val addonName = "Ghostery – Privacy Ad Blocker"
 
     @get:Rule
     val activityTestRule = HomeActivityTestRule()
-
-    @Rule
-    @JvmField
-    val retryTestRule = RetryTestRule(3)
 
     @Before
     fun setUp() {
@@ -81,8 +77,6 @@ class SettingsAddonsTest {
     // Installs an add-on from the Add-ons menu and verifies the prompts
     @Test
     fun installAddonTest() {
-        val addonName = "uBlock Origin"
-
         homeScreen {}
             .openThreeDotMenu {}
             .openAddonsManagerMenu {
@@ -109,8 +103,6 @@ class SettingsAddonsTest {
     @Ignore("Intermittent failures, see: https://github.com/mozilla-mobile/fenix/issues/24843")
     @Test
     fun verifyAddonsCanBeUninstalled() {
-        val addonName = "uBlock Origin"
-
         addonsMenu {
             installAddon(addonName)
             closeAddonInstallCompletePrompt(addonName /*, activityTestRule*/)
@@ -133,7 +125,6 @@ class SettingsAddonsTest {
         // setting ETP to Strict mode to test it works with add-ons
         activityTestRule.activity.settings().setStrictETP()
 
-        val addonName = "uBlock Origin"
         val trackingProtectionPage =
             TestAssetHelper.getEnhancedTrackingProtectionAsset(mockWebServer)
 
@@ -152,7 +143,6 @@ class SettingsAddonsTest {
     @SmokeTest
     @Test
     fun useAddonsInPrivateModeTest() {
-        val addonName = "uBlock Origin"
         val trackingPage = TestAssetHelper.getEnhancedTrackingProtectionAsset(mockWebServer)
 
         homeScreen {
