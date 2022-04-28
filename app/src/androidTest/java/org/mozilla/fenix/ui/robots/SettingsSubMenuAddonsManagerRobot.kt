@@ -7,10 +7,12 @@
 package org.mozilla.fenix.ui.robots
 
 import android.widget.RelativeLayout
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.Visibility
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.hasSibling
@@ -49,7 +51,14 @@ import org.mozilla.fenix.helpers.ext.waitNotNull
 class SettingsSubMenuAddonsManagerRobot {
     fun verifyAddonPermissionPrompt(addonName: String) = assertAddonPermissionPrompt(addonName)
 
-    fun clickInstallAddon(addonName: String) = selectInstallAddon(addonName)
+    fun clickInstallAddon(addonName: String) {
+        onView(withId(R.id.add_ons_list))
+            .perform(RecyclerViewActions.scrollTo<RecyclerView.ViewHolder>(
+                hasDescendant(withText(addonName)))
+            )
+
+        selectInstallAddon(addonName)
+    }
 
     fun closeAddonInstallCompletePrompt(
         addonName: String,
@@ -135,8 +144,6 @@ class SettingsSubMenuAddonsManagerRobot {
     }
 
     private fun selectInstallAddon(addonName: String) {
-        scrollToElementByText(addonName)
-
         mDevice.waitNotNull(
             Until.findObject(By.textContains(addonName)),
             waitingTime
