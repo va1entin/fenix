@@ -38,8 +38,7 @@ class SettingsAddonsTest {
     private var addonsListIdlingResource: RecyclerViewIdlingResource? = null
     private var addonContainerIdlingResource: ViewVisibilityIdlingResource? = null
     private val featureSettingsHelper = FeatureSettingsHelper()
-    private val addonsList = listOf("Ghostery – Privacy Ad Blocker", "uBlock Origin", "Dark Reader", "AdGuard AdBlocker", "FoxyProxy Standard")
-    private val addonName = addonsList.random()
+    private val addonName = "uBlock Origin"
 
     @get:Rule
     val activityTestRule = HomeActivityTestRule()
@@ -147,7 +146,7 @@ class SettingsAddonsTest {
         }.goBack {
         }.openNavigationToolbar {
         }.enterURLAndEnterToBrowser(trackingProtectionPage.url) {
-           // verifyPageContent(trackingProtectionPage.content)
+           verifyPageContent(trackingProtectionPage.content)
         }
     }
 
