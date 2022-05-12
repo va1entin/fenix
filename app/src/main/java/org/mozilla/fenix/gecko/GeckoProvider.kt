@@ -21,6 +21,9 @@ import org.mozilla.geckoview.ContentBlocking
 import org.mozilla.geckoview.ContentBlocking.SafeBrowsingProvider
 import org.mozilla.geckoview.GeckoRuntime
 import org.mozilla.geckoview.GeckoRuntimeSettings
+import java.io.File
+
+const val GECKO_DEBUG_CONFIG_FILE_NAME = "geckoview-config.yaml"
 
 object GeckoProvider {
     private var runtime: GeckoRuntime? = null
@@ -58,6 +61,22 @@ object GeckoProvider {
             .contentBlocking(policy.toContentBlockingSetting())
             .debugLogging(Config.channel.isDebug)
             .aboutConfigEnabled(Config.channel.isBeta || Config.channel.isNightlyOrDebug)
+            .configFilePath((context.filesDir.path + File.separatorChar + GECKO_DEBUG_CONFIG_FILE_NAME).also {
+                println("TestLog: adding \"extensions.logging.enabled: true\" ... ")
+
+                File(it).apply {
+                    createNewFile()
+                    printWriter().use {
+                        it.println("prefs:")
+                        it.println("  extensions.logging.enabled: true")
+                    }
+                }
+
+                println("TestLog: content of $it afterwards:")
+                println("-------------------------")
+                println(File(it).bufferedReader().use { it.readText() })
+                println("-------------------------")
+            })
             .build()
 
         val settings = context.components.settings

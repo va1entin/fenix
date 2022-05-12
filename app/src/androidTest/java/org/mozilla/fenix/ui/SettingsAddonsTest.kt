@@ -6,10 +6,8 @@ package org.mozilla.fenix.ui
 
 import android.view.View
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.uiautomator.UiSelector
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
-import org.junit.Assume.assumeFalse
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -22,11 +20,9 @@ import org.mozilla.fenix.helpers.FeatureSettingsHelper
 import org.mozilla.fenix.helpers.HomeActivityTestRule
 import org.mozilla.fenix.helpers.RecyclerViewIdlingResource
 import org.mozilla.fenix.helpers.TestAssetHelper
-import org.mozilla.fenix.helpers.TestAssetHelper.waitingTimeShort
 import org.mozilla.fenix.helpers.ViewVisibilityIdlingResource
 import org.mozilla.fenix.ui.robots.addonsMenu
 import org.mozilla.fenix.ui.robots.homeScreen
-import org.mozilla.fenix.ui.robots.mDevice
 import org.mozilla.fenix.ui.robots.navigationToolbar
 
 /**
@@ -70,20 +66,20 @@ class SettingsAddonsTest {
     }
 
     // Walks through settings add-ons menu to ensure all items are present
-    @Test
-    fun settingsAddonsItemsTest() {
-        homeScreen {
-        }.openThreeDotMenu {
-        }.openSettings {
-            verifyAdvancedHeading()
-            verifyAddons()
-        }.openAddonsManagerMenu {
-            addonsListIdlingResource =
-                RecyclerViewIdlingResource(activityTestRule.activity.findViewById(R.id.add_ons_list), 1)
-            IdlingRegistry.getInstance().register(addonsListIdlingResource!!)
-            verifyAddonsItems()
-        }
-    }
+    // @Test
+    // fun settingsAddonsItemsTest() {
+    //     homeScreen {
+    //     }.openThreeDotMenu {
+    //     }.openSettings {
+    //         verifyAdvancedHeading()
+    //         verifyAddons()
+    //     }.openAddonsManagerMenu {
+    //         addonsListIdlingResource =
+    //             RecyclerViewIdlingResource(activityTestRule.activity.findViewById(R.id.add_ons_list), 1)
+    //         IdlingRegistry.getInstance().register(addonsListIdlingResource!!)
+    //         verifyAddonsItems()
+    //     }
+    // }
 
     // Installs an add-on from the Add-ons menu and verifies the prompts
     @Test
@@ -102,7 +98,6 @@ class SettingsAddonsTest {
                 cancelInstallAddon()
                 clickInstallAddon(addonName)
                 acceptPermissionToInstallAddon()
-                assumeFalse(mDevice.findObject(UiSelector().text("Failed to install $addonName")).waitForExists(waitingTimeShort))
                 closeAddonInstallCompletePrompt(addonName, activityTestRule)
                 verifyAddonIsInstalled(addonName)
                 verifyEnabledTitleDisplayed()
@@ -114,7 +109,7 @@ class SettingsAddonsTest {
     @Test
     fun verifyAddonsCanBeUninstalled() {
         addonsMenu {
-            installAddon(addonName)
+            installAddon()
             closeAddonInstallCompletePrompt(addonName, activityTestRule)
             IdlingRegistry.getInstance().unregister(addonsListIdlingResource!!)
         }.openDetailedMenuForAddon(addonName) {
@@ -140,7 +135,7 @@ class SettingsAddonsTest {
             TestAssetHelper.getEnhancedTrackingProtectionAsset(mockWebServer)
 
         addonsMenu {
-            installAddon(addonName)
+            installAddon()
             closeAddonInstallCompletePrompt(addonName, activityTestRule)
             IdlingRegistry.getInstance().unregister(addonsListIdlingResource!!)
         }.goBack {
@@ -159,7 +154,7 @@ class SettingsAddonsTest {
         homeScreen {
         }.togglePrivateBrowsingMode()
         addonsMenu {
-            installAddon(addonName)
+            installAddon()
             selectAllowInPrivateBrowsing(/*, activityTestRule*/)
             closeAddonInstallCompletePrompt(addonName, activityTestRule)
             IdlingRegistry.getInstance().unregister(addonsListIdlingResource!!)
@@ -172,7 +167,7 @@ class SettingsAddonsTest {
         }
     }
 
-    private fun installAddon(addonName: String) {
+    private fun installAddon() {
         homeScreen {
         }.openThreeDotMenu {
         }.openAddonsManagerMenu {
@@ -185,7 +180,6 @@ class SettingsAddonsTest {
             clickInstallAddon(addonName)
             verifyAddonPermissionPrompt(addonName)
             acceptPermissionToInstallAddon()
-            assumeFalse(mDevice.findObject(UiSelector().text("Failed to install $addonName")).waitForExists(waitingTimeShort))
         }
     }
 }
