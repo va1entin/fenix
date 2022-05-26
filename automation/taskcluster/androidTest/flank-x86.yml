@@ -46,6 +46,12 @@ gcloud:
    - model: Pixel2
      version: 30
      locale: en_US
+   - model: Pixel2
+     version: 29
+     locale: en_US
+   - model: Pixel2
+     version: 28
+     locale: en_US
 
 flank:
   project: GOOGLE_PROJECT
@@ -54,7 +60,7 @@ flank:
   max-test-shards: -1
   # num-test-runs: the amount of times to run the tests.
   # 1 runs the tests once. 10 runs all the tests 10x
-  num-test-runs: 20
+  num-test-runs: 10
   ### Output Style flag
   ## Output style of execution status. May be one of [verbose, multi, single, compact].
   ## For runs with only one test execution the default value is 'verbose', in other cases
