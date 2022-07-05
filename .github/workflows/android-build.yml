@@ -1,0 +1,143 @@
+name: Android build
+on:
+  push:
+    branches:
+      - test-workflow
+jobs:
+  run-build:
+    runs-on: ubuntu-latest
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Install Android SDK with pieces Gradle skips
+        run: ./automation/iceraven/install-sdk.sh
+      - name: Create version name
+        run: echo "VERSION_NAME=$(git describe --tags HEAD)" >> $GITHUB_ENV
+      - name: Build forkRelease variant of app
+        uses: eskatos/gradle-command-action@v1
+        with:
+          wrapper-cache-enabled: true
+          dependencies-cache-enabled: true
+          configuration-cache-enabled: true
+          arguments: app:assembleForkRelease -PversionName=${{ env.VERSION_NAME }}
+      - name: Create signed APKs
+        uses: abhijitvalluri/sign-apks@v0.8
+        with:
+          releaseDirectory: app/build/outputs/apk/forkRelease/
+          signingKeyBase64: ${{ secrets.DEBUG_SIGNING_KEY }}
+          alias: ${{ secrets.DEBUG_ALIAS }}
+          keyStorePassword: ${{ secrets.DEBUG_KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.DEBUG_KEY_PASSWORD }}
+      - name: Archive arm64 apk
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-arm64-v8a-forkRelease.apk
+          path: app/build/outputs/apk/forkRelease/app-arm64-v8a-forkRelease.apk
+      - name: Archive armeabi apk
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-armeabi-v7a-forkRelease.apk
+          path: app/build/outputs/apk/forkRelease/app-armeabi-v7a-forkRelease.apk
+      - name: Archive x86 apk
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-x86-forkRelease.apk
+          path: app/build/outputs/apk/forkRelease/app-x86-forkRelease.apk
+      - name: Archive x86_64 apk
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-x86_64-forkRelease.apk
+          path: app/build/outputs/apk/forkRelease/app-x86_64-forkRelease.apk
+
+
+  run-testDebug:
+    runs-on: ubuntu-latest
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Run tests
+        uses: eskatos/gradle-command-action@v1
+        with:
+          wrapper-cache-enabled: true
+          dependencies-cache-enabled: true
+          configuration-cache-enabled: true
+          arguments: testDebug
+
+
+  run-detekt:
+    runs-on: ubuntu-latest
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Run detekt
+        uses: eskatos/gradle-command-action@v1
+        with:
+          wrapper-cache-enabled: true
+          dependencies-cache-enabled: true
+          configuration-cache-enabled: true
+          arguments: detekt
+      - name: Archive detekt results
+        uses: actions/upload-artifact@v2
+        with:
+          name: detekt report
+          path: build/reports/detekt.html
+
+
+  run-ktlint:
+    runs-on: ubuntu-latest
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Run ktlint
+        uses: eskatos/gradle-command-action@v1
+        with:
+          wrapper-cache-enabled: true
+          dependencies-cache-enabled: true
+          configuration-cache-enabled: true
+          arguments: ktlint
+
+
+  run-lintDebug:
+    runs-on: ubuntu-latest
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Run lintDebug
+        uses: eskatos/gradle-command-action@v1
+        with:
+          wrapper-cache-enabled: true
+          dependencies-cache-enabled: true
+          configuration-cache-enabled: true
+          arguments: lintDebug
+      - name: Archive lint results
+        uses: actions/upload-artifact@v2
+        with:
+          name: lintDebug report
+          path: app/build/reports/lint-results-debug.html
