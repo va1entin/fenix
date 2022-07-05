@@ -20,13 +20,13 @@ jobs:
         run: ./automation/install-sdk.sh
       - name: Create version name
         run: echo "VERSION_NAME=$(git describe --tags HEAD)" >> $GITHUB_ENV
-      - name: Build forkRelease variant of app
+      - name: Build variant of app
         uses: eskatos/gradle-command-action@v1
         with:
           wrapper-cache-enabled: true
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
-          arguments: app:assembleForkRelease -PversionName=${{ env.VERSION_NAME }}
+          arguments: app:assembleDebug -PversionName=${{ env.VERSION_NAME }}
       - name: Create signed APKs
         uses: abhijitvalluri/sign-apks@v0.8
         with:
