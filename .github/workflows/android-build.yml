@@ -31,7 +31,7 @@ jobs:
         run: find / -name '*debug*'
       - name: Create signed APKs
         id: sign_app
-        uses: abhijitvalluri/sign-apks@v0.8
+        uses: r0adkll/sign-android-release@v1
         with:
           releaseDirectory: app/build/outputs/apk/debug/
           signingKeyBase64: ${{ secrets.SIGNING_KEY_BASE64 }}
