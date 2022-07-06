@@ -27,8 +27,6 @@ jobs:
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
           arguments: app:assembleDebug -PversionName=102 # -PversionName=${{ env.VERSION_NAME }}
-      - name: List outputs before signing
-        run: find /home/runner/ -name '*.apk' || true
       - name: Create signed APKs
         id: sign_app
         uses: r0adkll/sign-android-release@v1
@@ -38,25 +36,10 @@ jobs:
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
-      - name: List outputs after signing
-        run: find /home/runner/ -name '*.apk' || true
-      - name: Archive arm64 apk
+      # - name: List outputs after signing
+      #   run: find /home/runner/ -name '*.apk' || true
+      - name: Archive apks
         uses: actions/upload-artifact@v3
         with:
           name: app-arm64-v8a-debug.apk
-          path: app/build/outputs/apk/debug/app-arm64-v8a-debug.apk
-      - name: Archive armeabi apk
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-armeabi-v7a-forkRelease.apk
-          path: app/build/outputs/apk/debug/app-armeabi-v7a-debug.apk
-      - name: Archive x86 apk
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-x86-forkRelease.apk
-          path: app/build/outputs/apk/debug/app-x86-debug.apk
-      - name: Archive x86_64 apk
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-x86_64-forkRelease.apk
-          path: app/build/outputs/apk/debug/app-x86_64-debug.apk
+          path: app/build/outputs/apk/debug/app-*-signed.apk
