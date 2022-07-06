@@ -37,7 +37,7 @@ jobs:
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
       - name: List outputs
-        run: echo ${{ steps.sign_app.outputs.signedReleaseFiles }}
+        run: ls /**/*
       - name: Archive arm64 apk
         uses: actions/upload-artifact@v2
         with:
