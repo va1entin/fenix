@@ -27,33 +27,33 @@ jobs:
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
           arguments: app:assembleDebug -PversionName=102 # -PversionName=${{ env.VERSION_NAME }}
-      - name: Create version name
+      - name: List outputs
         run: ls app/build/outputs/**/*
       - name: Create signed APKs
         uses: abhijitvalluri/sign-apks@v0.8
         with:
           releaseDirectory: app/build/outputs/apk/forkRelease/
-          signingKeyBase64: ${{ secrets.DEBUG_SIGNING_KEY }}
-          alias: ${{ secrets.DEBUG_ALIAS }}
-          keyStorePassword: ${{ secrets.DEBUG_KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.DEBUG_KEY_PASSWORD }}
+          signingKeyBase64: ${{ secrets.SIGNING_KEY_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
       - name: Archive arm64 apk
         uses: actions/upload-artifact@v2
         with:
-          name: app-arm64-v8a-forkRelease.apk
-          path: app/build/outputs/apk/forkRelease/app-arm64-v8a-forkRelease.apk
+          name: app-arm64-v8a-debug.apk
+          path: app/build/outputs/apk/debug/app-arm64-v8a-debug.apk
       - name: Archive armeabi apk
         uses: actions/upload-artifact@v2
         with:
           name: app-armeabi-v7a-forkRelease.apk
-          path: app/build/outputs/apk/forkRelease/app-armeabi-v7a-forkRelease.apk
+          path: app/build/outputs/apk/debug/app-armeabi-v7a-debug.apk
       - name: Archive x86 apk
         uses: actions/upload-artifact@v2
         with:
           name: app-x86-forkRelease.apk
-          path: app/build/outputs/apk/forkRelease/app-x86-forkRelease.apk
+          path: app/build/outputs/apk/debug/app-x86-debug.apk
       - name: Archive x86_64 apk
         uses: actions/upload-artifact@v2
         with:
           name: app-x86_64-forkRelease.apk
-          path: app/build/outputs/apk/forkRelease/app-x86_64-forkRelease.apk
+          path: app/build/outputs/apk/debug/app-x86_64-debug.apk
