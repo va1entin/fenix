@@ -41,5 +41,4 @@ jobs:
       - name: Archive apks
         uses: actions/upload-artifact@v3
         with:
-          name: app-arm64-v8a-debug.apk
           path: app/build/outputs/apk/debug/app-*-signed.apk
