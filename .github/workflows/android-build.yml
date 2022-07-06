@@ -28,7 +28,7 @@ jobs:
           configuration-cache-enabled: true
           arguments: app:assembleDebug -PversionName=102 # -PversionName=${{ env.VERSION_NAME }}
       - name: List outputs before signing
-        run: find / -name '*.apk'
+        run: find /home/runner/ -name '*.apk' || true
       - name: Create signed APKs
         id: sign_app
         uses: r0adkll/sign-android-release@v1
@@ -39,7 +39,7 @@ jobs:
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
       - name: List outputs after signing
-        run: find / -name '*.apk'
+        run: find /home/runner/ -name '*.apk' || true
       - name: Archive arm64 apk
         uses: actions/upload-artifact@v3
         with:
