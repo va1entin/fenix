@@ -27,8 +27,6 @@ jobs:
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
           arguments: app:assembleDebug -PversionName=102 # -PversionName=${{ env.VERSION_NAME }}
-      - name: List outputs
-        run: ls app/build/outputs/**/*
       - name: Create signed APKs
         uses: abhijitvalluri/sign-apks@v0.8
         with:
@@ -37,6 +35,8 @@ jobs:
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
+      - name: List outputs
+        run: ls app/build/outputs/**/*
       - name: Archive arm64 apk
         uses: actions/upload-artifact@v2
         with:
