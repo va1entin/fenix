@@ -37,6 +37,8 @@ jobs:
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
+      - name: List outputs after signing
+        run: find /home/runner/ -name '*.apk' || true
       - name: Archive arm64 apk
         uses: actions/upload-artifact@v3
         with:
