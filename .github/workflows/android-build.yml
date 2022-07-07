@@ -26,19 +26,83 @@ jobs:
           wrapper-cache-enabled: true
           dependencies-cache-enabled: true
           configuration-cache-enabled: true
-          arguments: app:assembleDebug -PversionName=102 # -PversionName=${{ env.VERSION_NAME }}
+          arguments: app:assembleRelease -PversionName=${{ env.VERSION_NAME }}
       - name: Create signed APKs
         id: sign_app
         uses: r0adkll/sign-android-release@v1
         with:
-          releaseDirectory: app/build/outputs/apk/debug/
+          releaseDirectory: app/build/outputs/apk/release/
           signingKeyBase64: ${{ secrets.SIGNING_KEY_BASE64 }}
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
           keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
-      # - name: List outputs after signing
-      #   run: find /home/runner/ -name '*.apk' || true
-      - name: Archive apks
+      - name: Archive arm64 apk
         uses: actions/upload-artifact@v3
         with:
-          path: app/build/outputs/apk/debug/app-*-signed.apk
+          name: app-arm64-v8a-release.apk
+          path: app/build/outputs/apk/release/app-arm64-v8a-release.apk
+      - name: Archive armeabi apk
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-armeabi-v7a-release.apk
+          path: app/build/outputs/apk/release/app-armeabi-v7a-release.apk
+      # - name: List outputs after signing
+      #   run: find /home/runner/ -name '*.apk' || true
+      # - name: Create changelog
+      #   run: |
+      #     echo "## Automated release of version equivalent to fenix ${{ github.event.ref }}" >>temp_changelog.md
+    #       echo "This is an automated release, not directly descended from the previous release." >>temp_changelog.md
+      # - name: Create Release
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: ${{ github.event.ref }}
+      #     release_name: "Version ${{ github.event.ref }}"
+      #     draft: false
+      #     prerelease: false
+      #     body_path: temp_changelog.md
+
+      # - name: Upload arm64 apk
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: app/build/outputs/apk/release/app-arm64-v8a-release.apk
+      #     asset_name: ${{ github.event.ref }}-browser-arm64-v8a-release.apk
+      #     asset_content_type: application/vnd.android.package-archive
+
+
+      # - name: Upload armeabi apk
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: app/build/outputs/apk/release/app-armeabi-v7a-release.apk
+      #     asset_name: ${{ github.event.ref }}-browser-armeabi-v7a-release.apk
+      #     asset_content_type: application/vnd.android.package-archive
+
+
+      # - name: Upload x86 apk
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: app/build/outputs/apk/release/app-x86-release.apk
+      #     asset_name: ${{ github.event.ref }}-browser-x86-release.apk
+      #     asset_content_type: application/vnd.android.package-archive
+
+
+      # - name: Upload x86_64 apk
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: app/build/outputs/apk/release/app-x86_64-release.apk
+      #     asset_name: ${{ github.event.ref }}-browser-x86_64-release.apk
+      #     asset_content_type: application/vnd.android.package-archive
