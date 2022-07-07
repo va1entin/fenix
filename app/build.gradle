@@ -877,4 +877,4 @@ android.applicationVariants.all { variant ->
 }
 
 // Enable expiration by major version.
-ext.gleanExpireByVersion = Config.majorVersion(project)
+// ext.gleanExpireByVersion = Config.majorVersion(project)
