@@ -41,12 +41,12 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: app-arm64-v8a-release.apk
-          path: app/build/outputs/apk/release/app-arm64-v8a-release.apk
+          path: app/build/outputs/apk/release/app-arm64-v8a-release-signed.apk
       - name: Archive armeabi apk
         uses: actions/upload-artifact@v3
         with:
           name: app-armeabi-v7a-release.apk
-          path: app/build/outputs/apk/release/app-armeabi-v7a-release.apk
+          path: app/build/outputs/apk/release/app-armeabi-v7a-release-signed.apk
       # - name: List outputs after signing
       #   run: find /home/runner/ -name '*.apk' || true
       # - name: Create changelog
