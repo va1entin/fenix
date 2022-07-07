@@ -20,7 +20,7 @@ jobs:
       - name: Install Android SDK with pieces Gradle skips
         run: ./automation/install-sdk.sh
       - name: Create version name
-        run: echo "VERSION_NAME=$(git describe --tags HEAD)" >> $GITHUB_ENV
+        run: echo "VERSION_NAME=$(git describe --tags HEAD | sed 's/^v//')" >> $GITHUB_ENV
       - name: Build variant of app
         uses: eskatos/gradle-command-action@v1
         with:
