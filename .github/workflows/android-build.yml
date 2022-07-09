@@ -39,16 +39,18 @@ jobs:
           keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
       - name: List outputs after signing
         run: find /home/runner/ -name '*.apk' || true
+      - name: List outputs after signing
+        run: cd app/build/outputs/apk/release && mv app-arm64-v8a-release-unsigned-signed.apk app-arm64-v8a-release-signed.apk && mv app-armeabi-v7a-release-unsigned-signed.apk app-armeabi-v7a-release-signed.apk && mv app-x86-release-unsigned-signed.apk app-x86-release-signed.apk && mv app-x86_64-release-unsigned-signed.apk app-x86_64-release-signed.apk
       - name: Archive arm64 apk
         uses: actions/upload-artifact@v3
         with:
           name: app-arm64-v8a-release-signed.apk
-          path: app/build/outputs/apk/release/app-arm64-v8a-release-unsigned-signed.apk
+          path: app/build/outputs/apk/release/app-arm64-v8a-release-signed.apk
       - name: Archive armeabi apk
         uses: actions/upload-artifact@v3
         with:
           name: app-armeabi-v7a-release-signed.apk
-          path: app/build/outputs/apk/release/app-armeabi-v7a-release-unsigned-signed.apk
+          path: app/build/outputs/apk/release/app-armeabi-v7a-release-signed.apk
       # - name: List outputs after signing
       #   run: find /home/runner/ -name '*.apk' || true
       # - name: Create changelog
