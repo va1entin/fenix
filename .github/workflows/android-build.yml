@@ -4,9 +4,7 @@
 name: Android build
 on:
   push:
-    branches:
-      - test-workflow
-      - releases_v102.0.0
+
 jobs:
   run-build:
     runs-on: ubuntu-latest
