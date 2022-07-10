@@ -57,7 +57,7 @@ jobs:
 
       - name: Create changelog
         run: |
-          echo "# Automated release of version equivalent to fenix ${{ github.event.ref }}" >>temp_changelog.md
+          echo "# Automated release of version equivalent to fenix $GITHUB_REF_NAME" >>temp_changelog.md
 
       - name: Create Release
         id: create_release
@@ -65,8 +65,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.ref }}
-          release_name: "Version ${{ github.event.ref }}"
+          tag_name: $GITHUB_REF_NAME
+          release_name: "Version $GITHUB_REF_NAME"
           draft: false
           prerelease: false
           body_path: temp_changelog.md
