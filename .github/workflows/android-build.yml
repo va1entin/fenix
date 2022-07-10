@@ -21,7 +21,7 @@ jobs:
           java-version: 11
 
       - name: Install Android SDK with pieces Gradle skips
-        run: env; ./automation/install-sdk.sh
+        run: ./automation/install-sdk.sh
 
       - name: Create version name
         run: echo "VERSION_NAME=$(git describe --tags HEAD | sed 's/^v//')" >> $GITHUB_ENV
@@ -66,8 +66,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "${{ env.GITHUB_REF_NAME }}"
-          release_name: "Version ${{ env.GITHUB_REF_NAME }}"
+          tag_name: ${{ github.ref.name }}
+          release_name: "Version ${{ github.ref.name }}"
           draft: false
           prerelease: false
           body_path: temp_changelog.md
