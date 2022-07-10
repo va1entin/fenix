@@ -1,0 +1,115 @@
+# Adapted from Iceraven workflows
+# https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/android-build.yml
+# https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/release-automation.yml
+name: Android build
+on:
+  push:
+    branches:
+      - test-workflow
+      - releases_v102.0.0
+jobs:
+  run-build:
+    runs-on: ubuntu-latest
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Install Android SDK with pieces Gradle skips
+        run: ./automation/install-sdk.sh
+
+      - name: Create version name
+        run: echo "VERSION_NAME=$(git describe --tags HEAD | sed 's/^v//')" >> $GITHUB_ENV
+
+      - name: Build variant of app
+        uses: eskatos/gradle-command-action@v1
+        with:
+          wrapper-cache-enabled: true
+          dependencies-cache-enabled: true
+          configuration-cache-enabled: true
+          arguments: app:assembleRelease -PversionName=${{ env.VERSION_NAME }}
+
+      - name: Create signed APKs
+        id: sign_app
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/release/
+          signingKeyBase64: ${{ secrets.SIGNING_KEY_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
+
+      - name: List outputs after signing
+        run: find /home/runner/ -name '*.apk' || true
+
+      - name: List outputs after signing
+        run: cd app/build/outputs/apk/release && mv app-arm64-v8a-release-unsigned-signed.apk app-arm64-v8a-release-signed.apk && mv app-armeabi-v7a-release-unsigned-signed.apk app-armeabi-v7a-release-signed.apk && mv app-x86-release-unsigned-signed.apk app-x86-release-signed.apk && mv app-x86_64-release-unsigned-signed.apk app-x86_64-release-signed.apk
+
+      - name: Archive armeabi apk
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-armeabi-v7a-release-signed.apk
+          path: app/build/outputs/apk/release/app-armeabi-v7a-release-signed.apk
+
+      - name: Create changelog
+        run: |
+          echo "# Automated release of version equivalent to fenix ${{ env.VERSION_NAME }}" >>temp_changelog.md
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION_NAME }}
+          release_name: "Version ${{ env.VERSION_NAME }}"
+          draft: false
+          prerelease: false
+          body_path: temp_changelog.md
+
+      - name: Upload arm64 apk
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: app/build/outputs/apk/release/app-arm64-v8a-release-signed.apk
+          asset_name: browser-arm64-v8a-release-${{ env.VERSION_NAME }}-signed.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      - name: Upload armeabi apk
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: app/build/outputs/apk/release/app-armeabi-v7a-release-signed.apk
+          asset_name: browser-armeabi-v7a-release-${{ env.VERSION_NAME }}-signed.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      - name: Upload x86 apk
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: app/build/outputs/apk/release/app-x86-release-signed.apk
+          asset_name: browser-x86-release-${{ env.VERSION_NAME }}-signed.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      - name: Upload x86_64 apk
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: app/build/outputs/apk/release/app-x86_64-release-signed.apk
+          asset_name: browser-x86_64-release-${{ env.VERSION_NAME }}-signed.apk
+          asset_content_type: application/vnd.android.package-archive
