@@ -47,7 +47,7 @@ jobs:
       - name: List outputs after signing
         run: find /home/runner/ -name '*.apk' || true
 
-      - name: List outputs after signing
+      - name: Fix signed APK filenames
         run: cd app/build/outputs/apk/release && mv app-arm64-v8a-release-unsigned-signed.apk app-arm64-v8a-release-signed.apk && mv app-armeabi-v7a-release-unsigned-signed.apk app-armeabi-v7a-release-signed.apk && mv app-x86-release-unsigned-signed.apk app-x86-release-signed.apk && mv app-x86_64-release-unsigned-signed.apk app-x86_64-release-signed.apk
 
       - name: Archive armeabi apk
@@ -58,7 +58,7 @@ jobs:
 
       - name: Create changelog
         run: |
-          echo "# Automated release of version equivalent to fenix ${{ env.VERSION_NAME }}" >>temp_changelog.md
+          echo "# Automated release of modded equivalent to fenix ${{ env.VERSION_NAME }}" >>temp_changelog.md
 
       - name: Create Release
         id: create_release
@@ -66,8 +66,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.VERSION_NAME }}
-          release_name: "Version ${{ env.VERSION_NAME }}"
+          tag_name: ${{ env.GITHUB_REF_NAME }}
+          release_name: "Version ${{ env.GITHUB_REF_NAME }}"
           draft: false
           prerelease: false
           body_path: temp_changelog.md
@@ -79,7 +79,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: app/build/outputs/apk/release/app-arm64-v8a-release-signed.apk
-          asset_name: browser-arm64-v8a-release-${{ env.VERSION_NAME }}-signed.apk
+          asset_name: browser-arm64-v8a-release-${{ env.GITHUB_REF_NAME }}-signed.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Upload armeabi apk
@@ -89,7 +89,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: app/build/outputs/apk/release/app-armeabi-v7a-release-signed.apk
-          asset_name: browser-armeabi-v7a-release-${{ env.VERSION_NAME }}-signed.apk
+          asset_name: browser-armeabi-v7a-release-${{ env.GITHUB_REF_NAME }}-signed.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Upload x86 apk
@@ -99,7 +99,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: app/build/outputs/apk/release/app-x86-release-signed.apk
-          asset_name: browser-x86-release-${{ env.VERSION_NAME }}-signed.apk
+          asset_name: browser-x86-release-${{ env.GITHUB_REF_NAME }}-signed.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Upload x86_64 apk
@@ -109,5 +109,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: app/build/outputs/apk/release/app-x86_64-release-signed.apk
-          asset_name: browser-x86_64-release-${{ env.VERSION_NAME }}-signed.apk
+          asset_name: browser-x86_64-release-${{ env.GITHUB_REF_NAME }}-signed.apk
           asset_content_type: application/vnd.android.package-archive
