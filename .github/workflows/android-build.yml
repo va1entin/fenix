@@ -1,3 +1,6 @@
+# Adapted from Iceraven workflows
+# https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/android-build.yml
+# https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/release-automation.yml
 name: Android build
 on:
   push:
@@ -57,7 +60,7 @@ jobs:
 
       - name: Create changelog
         run: |
-          echo "# Automated release of version equivalent to fenix $GITHUB_REF_NAME" >>temp_changelog.md
+          echo "# Automated release of version equivalent to fenix ${{ env.VERSION_NAME }}" >>temp_changelog.md
 
       - name: Create Release
         id: create_release
@@ -65,8 +68,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: $GITHUB_REF_NAME
-          release_name: "Version $GITHUB_REF_NAME"
+          tag_name: ${{ env.VERSION_NAME }}
+          release_name: "Version ${{ env.VERSION_NAME }}"
           draft: false
           prerelease: false
           body_path: temp_changelog.md
@@ -78,7 +81,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: app/build/outputs/apk/release/app-arm64-v8a-release-signed.apk
-          asset_name: ${{ github.event.ref }}-browser-arm64-v8a-release-signed.apk
+          asset_name: ${{ env.VERSION_NAME }}-browser-arm64-v8a-release-signed.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Upload armeabi apk
@@ -88,7 +91,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: app/build/outputs/apk/release/app-armeabi-v7a-release-signed.apk
-          asset_name: ${{ github.event.ref }}-browser-armeabi-v7a-release-signed.apk
+          asset_name: ${{ env.VERSION_NAME }}-browser-armeabi-v7a-release-signed.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Upload x86 apk
@@ -98,7 +101,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: app/build/outputs/apk/release/app-x86-release-signed.apk
-          asset_name: ${{ github.event.ref }}-browser-x86-release-signed.apk
+          asset_name: ${{ env.VERSION_NAME }}-browser-x86-release-signed.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Upload x86_64 apk
@@ -108,5 +111,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: app/build/outputs/apk/release/app-x86_64-release-signed.apk
-          asset_name: ${{ github.event.ref }}-browser-x86_64-release-signed.apk
+          asset_name: ${{ env.VERSION_NAME }}-browser-x86_64-release-signed.apk
           asset_content_type: application/vnd.android.package-archive
