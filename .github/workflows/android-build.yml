@@ -7,7 +7,7 @@ on:
   push:
 
 jobs:
-  run-build:
+  - run-build:
     runs-on: ubuntu-latest
     if: "contains(toJSON(github.event.ref_type), 'branch')"
     steps:
@@ -64,7 +64,7 @@ jobs:
           release_branches: ${{ github.ref_name }}
           custom_tag: ${{ github.ref_name }}
 
-  create-release:
+  - create-release:
     runs-on: ubuntu-latest
     if: "contains(toJSON(github.event.ref_type), 'tag')"
       - name: Get apk artifacts
