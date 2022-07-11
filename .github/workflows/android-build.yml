@@ -25,7 +25,7 @@ jobs:
         run: ./automation/install-sdk.sh
 
       - name: Create version name
-        run: echo "VERSION_NAME=$(git describe --tags HEAD | sed 's/^v//')" >> $GITHUB_ENV; echo "RELEASE_NAME=$GITHUB_REF_NAME" >> $GITHUB_ENV
+        run: echo "VERSION_NAME=$(git describe --tags HEAD | sed 's/^v//')" >> $GITHUB_ENV
 
       - name: Build variant of app
         uses: eskatos/gradle-command-action@v1
@@ -51,11 +51,10 @@ jobs:
       - name: Fix signed APK filenames
         run: cd app/build/outputs/apk/release && mv app-arm64-v8a-release-unsigned-signed.apk app-arm64-v8a-release-signed.apk && mv app-armeabi-v7a-release-unsigned-signed.apk app-armeabi-v7a-release-signed.apk && mv app-x86-release-unsigned-signed.apk app-x86-release-signed.apk && mv app-x86_64-release-unsigned-signed.apk app-x86_64-release-signed.apk
 
-      - name: Archive armeabi apk
+      - name: Upload apk artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: app-armeabi-v7a-release-signed.apk
-          path: app/build/outputs/apk/release/app-armeabi-v7a-release-signed.apk
+          path: app/build/outputs/apk/release/app-*-release-signed.apk
 
       - name: Create tag
         id: create_tag
@@ -68,9 +67,15 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     if: "contains(toJSON(github.event.ref_type), 'tag')"
+      - name: Get apk artifacts
+        uses: actions/download-artifact@v3
+
+      - name: List artifacts after download
+        run: find /home/runner/ -name '*.apk*'
+
       - name: Create changelog
         run: |
-          echo "# Automated release ${{ env.RELEASE_NAME }} equivalent to fenix ${{ env.VERSION_NAME }}" >>temp_changelog.md
+          echo "# Automated release ${{ github.ref.name }} equivalent to fenix $(git describe --tags HEAD)" >>temp_changelog.md
 
       - name: Create Release
         id: create_release
@@ -90,8 +95,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app/build/outputs/apk/release/app-arm64-v8a-release-signed.apk
-          asset_name: browser-arm64-v8a-release-${{ env.GITHUB_REF_NAME }}-signed.apk
+          asset_path: app-arm64-v8a-release-signed.apk
+          asset_name: browser-arm64-v8a-release-${{ github.ref.name }}-signed.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Upload armeabi apk
@@ -100,8 +105,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app/build/outputs/apk/release/app-armeabi-v7a-release-signed.apk
-          asset_name: browser-armeabi-v7a-release-${{ env.GITHUB_REF_NAME }}-signed.apk
+          asset_path: app-armeabi-v7a-release-signed.apk
+          asset_name: browser-armeabi-v7a-release-${{ github.ref.name }}-signed.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Upload x86 apk
@@ -110,8 +115,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app/build/outputs/apk/release/app-x86-release-signed.apk
-          asset_name: browser-x86-release-${{ env.GITHUB_REF_NAME }}-signed.apk
+          asset_path: app-x86-release-signed.apk
+          asset_name: browser-x86-release-${{ github.ref.name }}-signed.apk
           asset_content_type: application/vnd.android.package-archive
 
       - name: Upload x86_64 apk
@@ -120,6 +125,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app/build/outputs/apk/release/app-x86_64-release-signed.apk
-          asset_name: browser-x86_64-release-${{ env.GITHUB_REF_NAME }}-signed.apk
+          asset_path: app-x86_64-release-signed.apk
+          asset_name: browser-x86_64-release-${{ github.ref.name }}-signed.apk
           asset_content_type: application/vnd.android.package-archive
