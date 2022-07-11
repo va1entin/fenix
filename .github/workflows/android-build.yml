@@ -58,7 +58,7 @@ jobs:
 
       - name: Create changelog
         run: |
-          echo "# Automated release of modded equivalent to fenix ${{ env.VERSION_NAME }}" >>temp_changelog.md
+          echo "# Automated release ${{ env.RELEASE_NAME }} equivalent to fenix ${{ env.VERSION_NAME }}" >>temp_changelog.md
 
       - name: Create Release
         id: create_release
