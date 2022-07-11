@@ -6,6 +6,8 @@ name: Android build
 
 on:
   push:
+  create:
+    tags:
 
 jobs:
   run-build:
