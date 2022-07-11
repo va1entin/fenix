@@ -57,6 +57,7 @@ jobs:
           path: app/build/outputs/apk/release/app-armeabi-v7a-release-signed.apk
 
       - name: Create changelog
+        if: "contains(toJSON(github.event.ref_type), 'tag')"
         run: |
           echo "# Automated release ${{ env.RELEASE_NAME }} equivalent to fenix ${{ env.VERSION_NAME }}" >>temp_changelog.md
 
