@@ -81,54 +81,11 @@ jobs:
         run: |
           echo "# Automated release ${{ github.ref_name }} equivalent to fenix $(git describe --tags HEAD)" >>temp_changelog.md
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create release
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: "Version ${{ github.ref_name }}"
-          draft: false
+          repo_token: "${{ secrets.TAG_CREATION_TOKEN }}"
           prerelease: false
-          body_path: temp_changelog.md
-
-      - name: Upload arm64 apk
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app-arm64-v8a-release-signed.apk
-          asset_name: browser-arm64-v8a-release-${{ github.ref_name }}-signed.apk
-          asset_content_type: application/vnd.android.package-archive
-
-      - name: Upload armeabi apk
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app-armeabi-v7a-release-signed.apk
-          asset_name: browser-armeabi-v7a-release-${{ github.ref_name }}-signed.apk
-          asset_content_type: application/vnd.android.package-archive
-
-      - name: Upload x86 apk
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app-x86-release-signed.apk
-          asset_name: browser-x86-release-${{ github.ref_name }}-signed.apk
-          asset_content_type: application/vnd.android.package-archive
-
-      - name: Upload x86_64 apk
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app-x86_64-release-signed.apk
-          asset_name: browser-x86_64-release-${{ github.ref_name }}-signed.apk
-          asset_content_type: application/vnd.android.package-archive
+          title: "${{ github.ref_name }}"
+          files: |
+            app-*-release-signed.apk
