@@ -1,6 +1,7 @@
 # Adapted from Iceraven workflows
 # https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/android-build.yml
 # https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/release-automation.yml
+
 name: Android build
 on:
   push:
@@ -8,7 +9,7 @@ on:
 jobs:
   run-build:
     runs-on: ubuntu-latest
-    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
+    if: "contains(toJSON(github.event.ref_type), 'branch')"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -56,8 +57,18 @@ jobs:
           name: app-armeabi-v7a-release-signed.apk
           path: app/build/outputs/apk/release/app-armeabi-v7a-release-signed.apk
 
+      - name: Create tag
+        id: create_tag
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_branches: ${{ github.ref_name }}
+          custom_tag: ${{ github.ref_name }}
+
+  create-release:
+    runs-on: ubuntu-latest
+    if: "contains(toJSON(github.event.ref_type), 'tag')"
       - name: Create changelog
-        if: "contains(toJSON(github.event.ref_type), 'tag')"
         run: |
           echo "# Automated release ${{ env.RELEASE_NAME }} equivalent to fenix ${{ env.VERSION_NAME }}" >>temp_changelog.md
 
@@ -67,7 +78,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.ref }}
+          tag_name: ${{ github.ref.name }}
           release_name: "Version ${{ github.ref.name }}"
           draft: false
           prerelease: false
