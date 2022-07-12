@@ -7,6 +7,7 @@ name: Android build
 on:
   workflow_dispatch:
   push:
+    branches:
   create:
     tags:
 
@@ -73,7 +74,14 @@ jobs:
     if: "contains(toJSON(github.ref_type), 'tag')"
     steps:
       - name: Get apk artifacts
-        uses: actions/download-artifact@v3
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: android-build.yml
+          # Optional, check the workflow run whether it has an artifact
+          # then will get the last available artifact from previous workflow
+          # default false, just try to download from the last one
+          # check_artifacts:  false
 
       - name: List artifacts after download
         run: find /home/runner/ -name '*.apk*'
