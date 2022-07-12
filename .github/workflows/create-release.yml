@@ -28,10 +28,9 @@ jobs:
             echo "# Automated release ${{ github.ref_name }} equivalent to fenix $(git describe --tags HEAD)" >>temp_changelog.md
 
         - name: Create release
-          uses: "marvinpinto/action-automatic-releases@latest"
+          uses: "marvinpinto/action-automatic-releases@v1.2.1"
           with:
             repo_token: "${{ secrets.TAG_CREATION_TOKEN }}"
             prerelease: false
-            title: "${{ github.ref_name }}"
             files: |
-              app-*-release-signed.apk
+              fenix/fenix/artifact/app-*-release-signed.apk
