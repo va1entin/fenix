@@ -19,6 +19,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Create version name
+        run: pwd && ls
+
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
