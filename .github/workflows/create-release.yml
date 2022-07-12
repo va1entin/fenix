@@ -26,7 +26,7 @@ jobs:
             workflow: android-build.yml
 
         - name: List artifacts after download
-          run: find /home/runner/ -name '*.apk*'
+          run: find -name '*.apk*'
 
         - name: Create changelog
           run: |
@@ -38,4 +38,4 @@ jobs:
             repo_token: "${{ secrets.TAG_CREATION_TOKEN }}"
             prerelease: false
             files: |
-              fenix/fenix/artifact/app-*-release-signed.apk
+              artifact/app-*-release-signed.apk
