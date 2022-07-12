@@ -8,8 +8,6 @@ on:
   workflow_dispatch:
   push:
     branches:
-  create:
-    tags:
 
 jobs:
   run-build:
@@ -68,33 +66,3 @@ jobs:
           github_token: ${{ secrets.TAG_CREATION_TOKEN }}
           release_branches: ${{ github.ref_name }}
           custom_tag: ${{ github.ref_name }}
-
-  create-release:
-    runs-on: ubuntu-latest
-    if: "contains(toJSON(github.ref_type), 'tag')"
-    steps:
-      - name: Get apk artifacts
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: android-build.yml
-          # Optional, check the workflow run whether it has an artifact
-          # then will get the last available artifact from previous workflow
-          # default false, just try to download from the last one
-          # check_artifacts:  false
-
-      - name: List artifacts after download
-        run: find /home/runner/ -name '*.apk*'
-
-      - name: Create changelog
-        run: |
-          echo "# Automated release ${{ github.ref_name }} equivalent to fenix $(git describe --tags HEAD)" >>temp_changelog.md
-
-      - name: Create release
-        uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.TAG_CREATION_TOKEN }}"
-          prerelease: false
-          title: "${{ github.ref_name }}"
-          files: |
-            app-*-release-signed.apk

@@ -1,0 +1,37 @@
+# Adapted from Iceraven workflows
+# https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/android-build.yml
+# https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/release-automation.yml
+
+name: Create release
+
+on:
+  workflow_dispatch:
+  create:
+    tags:
+
+jobs:
+  create-release:
+      runs-on: ubuntu-latest
+      if: "contains(toJSON(github.ref_type), 'tag')"
+      steps:
+        - name: Get apk artifacts
+          uses: dawidd6/action-download-artifact@v2
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            workflow: android-build.yml
+
+        - name: List artifacts after download
+          run: find /home/runner/ -name '*.apk*'
+
+        - name: Create changelog
+          run: |
+            echo "# Automated release ${{ github.ref_name }} equivalent to fenix $(git describe --tags HEAD)" >>temp_changelog.md
+
+        - name: Create release
+          uses: "marvinpinto/action-automatic-releases@latest"
+          with:
+            repo_token: "${{ secrets.TAG_CREATION_TOKEN }}"
+            prerelease: false
+            title: "${{ github.ref_name }}"
+            files: |
+              app-*-release-signed.apk
