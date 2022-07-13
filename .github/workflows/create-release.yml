@@ -19,11 +19,13 @@ jobs:
           with:
             fetch-depth: 0
 
-        - name: Get apk artifacts
-          uses: dawidd6/action-download-artifact@v2
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            workflow: android-build.yml
+        - name: Get ID of last run, wait for it to conclude and download artifacts when it has
+          run: |
+            echo "LAST_BUILD_RUN=$(gh run list --workflow android-build.yml --limit 1 --json 'conclusion,databaseId')"
+            echo "LAST_BUILD_RUN_ID=$(echo $LAST_BUILD_RUN | jq '.[].databaseId')" >> $GITHUB_ENV
+            echo "LAST_BUILD_RUN_CONCLUSION=$(echo $LAST_BUILD_RUN | jq '.[].conclusion')"
+            while [ $LAST_BUILD_RUN_CONCLUSION != "success" ]; do LAST_BUILD_RUN_CONCLUSION=$(gh run list --json 'conclusion,databaseId' | jq '.[] | select(.databaseId=='$LAST_BUILD_RUN_ID') | .conclusion'); sleep 5; done
+            gh run download "$LAST_BUILD_RUN_ID"
 
         - name: List artifacts after download
           run: find -name '*.apk*'
