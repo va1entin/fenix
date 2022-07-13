@@ -1,7 +1,7 @@
 # Adapted from Iceraven workflows
 # https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/android-build.yml
 # https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/release-automation.yml
-#
+
 name: Create release
 
 on:
