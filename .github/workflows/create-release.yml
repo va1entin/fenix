@@ -20,6 +20,8 @@ jobs:
             fetch-depth: 0
 
         - name: Get ID of last run, wait for it to conclude and download artifacts when it has
+          env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
             echo "LAST_BUILD_RUN=$(gh run list --workflow android-build.yml --limit 1 --json 'conclusion,databaseId')"
             echo "LAST_BUILD_RUN_ID=$(echo $LAST_BUILD_RUN | jq '.[].databaseId')" >> $GITHUB_ENV
