@@ -32,6 +32,8 @@ Iceraven's automation scripts were **really** helpful in creating this fork. So 
 
 If Mozilla finally stops treating Fenix users like idiots and removes the restriction upstream, I'll stop updating the fork - with prior announcement of course.
 
+You can find the patches that are being applied to the upstream code and the release pipeline [here in a separate repo](https://github.com/va1entin/fenix-customizations).
+
 ## Branding
 
 The app currently uses the default Firefox branding. Only the app name and ID are different, inside the app it still says "Firefox" everywhere.
