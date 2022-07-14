@@ -1,4 +1,42 @@
-# Firefox for Android
+# Firefox for Android (modified)
+
+## About this fork
+
+This is a fork of [Mozilla Fenix](https://github.com/mozilla-mobile/fenix), modified to allow installing any add-on you like using the [AMO collection override](https://blog.mozilla.org/addons/2020/09/29/expanded-extension-support-in-firefox-for-android-nightly/).
+
+The override feature was introduced in 2020 and allows users to install any add-on as long as its part of an add-on collection on addons.mozilla.org (AMO) - by default you can only install a very small collections of curated add-ons.
+
+Even though you need to activate a hidden debug menu to even **see** the corresponding menu, Mozilla has decided to make it available only in *unstable* Nightly builds and ignored many user requests to at least make it available in Beta, since.
+
+In other words, if you want to use **any** add-on not on the curated list, Mozilla forces you to:
+
+1) Create an account on addons.mozilla.org and curate your own collection of add-ons
+2) Activate a hidden debug menu in Firefox to give your add-on collection id
+3) Use only unstable Nightly builds indefinitely, because other versions don't even have that debug menu
+
+This fork:
+
+1) takes stable upstream Fenix releases and removes restriction 3) mentioned above
+2) changes the app name (to "Firefox mod" instead of "Firefox") and app ID
+
+There are other forks of Fenix that also removed this restriction, most notably [Iceraven](https://github.com/fork-maintainers/iceraven-browser), which has other features and contains a custom add-on installation menu so you won't even need to create an AMO account anymore. Due to these other features and the resulting bigger code delta, Iceraven usually takes longer to catch up with the latest upstream release, though, which is why I created this fork as a very easily maintainable fork without any differences to upstream apart from the removal of restricting custom add-on installation to Nightly.
+
+Iceraven's automation scripts were **really** helpful in creating this fork, so thanks a lot to you, devs!
+
+If Mozilla finally stops treating Fenix users like idiots and removes Nightly restriction upstream, I'll stop updating the fork - with prior announcement of course.
+
+## Installation
+
+Move to the Releases page and choose the latest release. In the release artifacts, you'll find APKs for different architectures. Download the one matching your device's arch and install.
+
+Google Play might ask you whether you **really** want to install this unknown app, just tap yes. This should eventually not happen anymore once more people start using it.
+
+You can check out the Git history to make sure there's no malware being added to upstream code here. :)
+
+The app is currently not available on the Google Play or F-Droid store but might be in the future.
+
+
+# Original upstream README
 
 [![Task Status](https://firefox-ci-tc.services.mozilla.com/api/github/v1/repository/mozilla-mobile/fenix/main/badge.svg)](https://firefox-ci-tc.services.mozilla.com/api/github/v1/repository/mozilla-mobile/fenix/main/latest)
 [![codecov](https://codecov.io/gh/mozilla-mobile/fenix/branch/main/graph/badge.svg)](https://codecov.io/gh/mozilla-mobile/fenix)
