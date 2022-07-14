@@ -4,9 +4,12 @@
 
 This is a fork of [Mozilla Fenix](https://github.com/mozilla-mobile/fenix), modified to allow installing any add-on you like using the [AMO collection override](https://blog.mozilla.org/addons/2020/09/29/expanded-extension-support-in-firefox-for-android-nightly/).
 
-The override feature was introduced in 2020 and allows users to install any add-on as long as its part of an add-on collection on addons.mozilla.org (AMO) - by default you can only install a very small collections of curated add-ons.
+The override feature was introduced in 2020 and allows users to install any add-on as long as its part of an add-on collection on addons.mozilla.org (AMO) - by default you can only install a very small collection of curated add-ons.
 
-Even though you need to activate a hidden debug menu to even **see** the corresponding menu, Mozilla has decided to make it available only in *unstable* Nightly builds and ignored many user requests to at least make it available in Beta, since.
+Even though you need to activate a hidden debug menu to even **see** the corresponding setting, Mozilla has decided to make it available only in *unstable* Nightly builds and ignored [many user requests](https://github.com/mozilla-mobile/fenix/issues?q=is%3Aissue+add-on+installation+nightly+is%3Aclosed+) to at least make it available in Beta, since.
+
+The reasoning behind this decision is that they don't want to drive users away from Firefox by them having a bad experience when installing add-ons that haven't been tested and approved on Android.
+
 
 In other words, if you want to use **any** add-on not on the curated list, Mozilla forces you to:
 
@@ -14,16 +17,26 @@ In other words, if you want to use **any** add-on not on the curated list, Mozil
 2) Activate a hidden debug menu in Firefox to give your add-on collection id
 3) Use only unstable Nightly builds indefinitely, because other versions don't even have that debug menu
 
+To many people (including myself) restriction 3) doesn't make sense, because regardless of Nightly or Stable the feature would still be hidden behind a debug menu that you need to know even exists and activate manually. It just hurts experienced users while not helping anyone.
+
 This fork:
 
 1) takes stable upstream Fenix releases and removes restriction 3) mentioned above
-2) changes the app name (to "Firefox mod" instead of "Firefox") and app ID
+2) changes the app name (to "Firefox mod" instead of "Firefox") and app ID to not conflict with Mozilla's ID
 
-There are other forks of Fenix that also removed this restriction, most notably [Iceraven](https://github.com/fork-maintainers/iceraven-browser), which has other features and contains a custom add-on installation menu so you won't even need to create an AMO account anymore. Due to these other features and the resulting bigger code delta, Iceraven usually takes longer to catch up with the latest upstream release, though, which is why I created this fork as a very easily maintainable fork without any differences to upstream apart from the removal of restricting custom add-on installation to Nightly.
+There are other forks of Fenix that also don't have the restriction. Most notably [Iceraven](https://github.com/fork-maintainers/iceraven-browser), which has other features and contains a custom add-on installation menu so you won't even need to create an AMO account anymore.
 
-Iceraven's automation scripts were **really** helpful in creating this fork, so thanks a lot to you, devs!
+Due to these other features and the resulting bigger code delta, Iceraven usually takes longer to catch up with the latest upstream release, though, which is why I created this fork as a very easily maintainable fork without any differences to upstream apart from allowing add-on collections in stable releases.
 
-If Mozilla finally stops treating Fenix users like idiots and removes Nightly restriction upstream, I'll stop updating the fork - with prior announcement of course.
+Iceraven's automation scripts were **really** helpful in creating this fork. So thanks a lot to you, devs! ❤️
+
+If Mozilla finally stops treating Fenix users like idiots and removes the restriction upstream, I'll stop updating the fork - with prior announcement of course.
+
+## Branding
+
+The app currently uses the default Firefox branding. Only the app name and ID are different, inside the app it still says "Firefox" everywhere.
+
+**@Mozilla: If this doesn't sit well with you, please create an issue in this repo and I'll come up with my own branding.**
 
 ## Installation
 
@@ -31,7 +44,7 @@ Move to the Releases page and choose the latest release. In the release artifact
 
 Google Play might ask you whether you **really** want to install this unknown app, just tap yes. This should eventually not happen anymore once more people start using it.
 
-You can check out the Git history to make sure there's no malware being added to upstream code here. :)
+You can check out the Git history to make sure there's no malware being added to upstream code here. 🙂
 
 The app is currently not available on the Google Play or F-Droid store but might be in the future.
 
