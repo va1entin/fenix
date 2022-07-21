@@ -33,9 +33,9 @@ jobs:
 
       - name: Build variant of app
         run: # Retry 3 times before the steps actually fails
-          (echo "===== Gradle Build Attempt: 1 ====" && gradlew app:assembleRelease -PversionName=$VERSION_NAME) || \
-          (echo "===== Gradle Build Attempt: 2 ====" && gradlew app:assembleRelease -PversionName=$VERSION_NAME) || \
-          (echo "===== Gradle Build Attempt: 3 ====" && gradlew app:assembleRelease -PversionName=$VERSION_NAME) || \
+          (echo "==== Gradle Build Attempt 1 ====" && gradlew app:assembleRelease -PversionName=$VERSION_NAME) || \
+          (echo "==== Gradle Build Attempt 2 ====" && gradlew app:assembleRelease -PversionName=$VERSION_NAME) || \
+          (echo "==== Gradle Build Attempt 3 ====" && gradlew app:assembleRelease -PversionName=$VERSION_NAME) || \
           (echo "==== Gradle Build Step Failed ====" && exit 1)
 
       # - name: Build variant of app
