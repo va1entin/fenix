@@ -32,7 +32,7 @@ jobs:
         run: echo "VERSION_NAME=$(git describe --tags HEAD | sed 's/^v//')" >> $GITHUB_ENV
 
       - name: Build variant of app, try 3 times in total if it fails
-        run: (echo "==== Gradle Build Attempt 1 ====" && ./gradlew app:assembleRelease -Dorg.gradle.daemon=false -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Attempt 2 ====" && ./gradlew app:assembleRelease -Dorg.gradle.daemon=false -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Attempt 3 ====" && ./gradlew app:assembleRelease -Dorg.gradle.daemon=false -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Step Failed ====" && exit 1)
+        run: (echo "==== Gradle Build Attempt 1 ====" && ./gradlew app:assembleRelease -Dorg.gradle.jvmargs=-Xmx6G -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Attempt 2 ====" && ./gradlew app:assembleRelease -Dorg.gradle.daemon=false -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Attempt 3 ====" && ./gradlew app:assembleRelease -Dorg.gradle.daemon=false -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Step Failed ====" && exit 1)
 
       # - name: Build variant of app
       #   uses: eskatos/gradle-command-action@v1
