@@ -583,9 +583,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             findPreference<Preference>(getPreferenceKey(R.string.pref_key_override_amo_collection))
 
         val show = (
-            Config.channel.isNightlyOrDebug && (
                 settings.amoCollectionOverrideConfigured() || settings.showSecretDebugMenuThisSession
-                )
             )
         preferenceAmoCollectionOverride?.apply {
             isVisible = show

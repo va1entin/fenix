@@ -1,0 +1,45 @@
+# Adapted from Iceraven workflows
+# https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/android-build.yml
+# https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/release-automation.yml
+
+name: Create release
+
+on:
+  workflow_dispatch:
+  create:
+    tags:
+
+jobs:
+  create-release:
+      runs-on: ubuntu-latest
+      if: "contains(toJSON(github.ref_type), 'tag')"
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v3
+          with:
+            fetch-depth: 0
+
+        - name: Get ID of last run, wait for it to conclude and download artifacts when it has
+          env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: |
+            LAST_BUILD_RUN=$(gh run list --workflow android-build.yml --limit 1 --json 'conclusion,databaseId')
+            LAST_BUILD_RUN_ID=$(echo $LAST_BUILD_RUN | jq '.[].databaseId')
+            LAST_BUILD_RUN_CONCLUSION=$(echo $LAST_BUILD_RUN | jq '.[].conclusion')
+            while [ "$LAST_BUILD_RUN_CONCLUSION" != '"success"' ]; do LAST_BUILD_RUN_CONCLUSION=$(gh run list --json 'conclusion,databaseId' | jq '.[] | select(.databaseId=='$LAST_BUILD_RUN_ID') | .conclusion'); sleep 5; done
+            gh run download "$LAST_BUILD_RUN_ID"
+
+        - name: List artifacts after download
+          run: find -name '*.apk*'
+
+        - name: Create changelog
+          run: |
+            echo "# Automated release ${{ github.ref_name }} equivalent to fenix $(git describe --tags HEAD)" >>temp_changelog.md
+
+        - name: Create release
+          uses: "marvinpinto/action-automatic-releases@v1.2.1"
+          with:
+            repo_token: "${{ secrets.TAG_CREATION_TOKEN }}"
+            prerelease: false
+            files: |
+              artifact/app-*-release-signed.apk
