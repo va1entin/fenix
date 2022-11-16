@@ -28,7 +28,13 @@ To many people (including myself) restriction 3) doesn't make sense, because reg
 This fork:
 
 1) takes stable upstream Fenix releases and removes restriction 3) mentioned above
-2) changes the app name (to "Firefox mod" instead of "Firefox") and app ID to not conflict with Mozilla's ID
+2) changes the app name (to "Firefox mod" instead of "Firefox") and app ID
+
+
+**It's currently not possible to install both Fenix and this fork alongside each other.**
+
+At least I didn't manage to do it. Iceraven can be installed alongside Fenix so if that's a must for you, try Iceraven.
+
 
 There are other forks of Fenix that also don't have the restriction. Most notably [Iceraven](https://github.com/fork-maintainers/iceraven-browser), which has other features and contains a custom add-on installation menu so you won't even need to create an AMO account anymore.
 
