@@ -2,6 +2,10 @@
 
 ## About this fork
 
+**UPDATE:** With release 107.1.0, AMO collection override is finally available in beta. See the respective issue [here](https://github.com/mozilla-mobile/fenix/issues/26948).
+
+Since its still not available in stable, I'll keep maintaining this fork for the time being. There is a [feature request](https://github.com/mozilla-mobile/fenix/issues/19594) for stable too.
+
 This is a fork of [Mozilla Fenix](https://github.com/mozilla-mobile/fenix), modified to allow installing any add-on you like using the [AMO collection override](https://blog.mozilla.org/addons/2020/09/29/expanded-extension-support-in-firefox-for-android-nightly/).
 
 The override feature was introduced in 2020 and allows users to install any add-on as long as its part of an add-on collection on addons.mozilla.org (AMO) - by default you can only install a very small collection of curated add-ons.
