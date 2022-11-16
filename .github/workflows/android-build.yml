@@ -32,8 +32,21 @@ jobs:
       - name: Create version name
         run: echo "VERSION_NAME=$(git describe --tags HEAD | sed 's/^v//')" >> $GITHUB_ENV
 
-      - name: Build variant of app, try again if it fails
-        run: (echo "==== Gradle Build Attempt 1 ====" && ./gradlew app:assembleRelease -Dorg.gradle.jvmargs=-Xmx2G -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Attempt 2 ====" && ./gradlew app:assembleRelease -Dorg.gradle.jvmargs=-Xmx2G -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Step Failed ====" && exit 1)
+      # - name: Build variant of app, try again if it fails
+      #   run: (echo "==== Gradle Build Attempt 1 ====" && ./gradlew app:assembleRelease -Dorg.gradle.jvmargs=-Xmx2G -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Attempt 2 ====" && ./gradlew app:assembleRelease -Dorg.gradle.jvmargs=-Xmx2G -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Step Failed ====" && exit 1)
+
+      - name: Build app release
+        uses: gradle/gradle-build-action@v2
+        env:
+          # Try to stop the daemon from magically vanishing by adding random memory-related arguments.
+          # See <https://stackoverflow.com/a/70010526> and <https://stackoverflow.com/a/70756876>
+          # The runner seems to have ~6 gigs of memory, so we make sure to stay under that.
+          # We have Java 11 so we don't have a perm size anymore.
+          GRADLE_OPTS: -Dorg.gradle.jvmargs="-XX:MaxMetaspaceSize=5g -Xms4096m -Xmx5800m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/dev/stderr"
+        with:
+          gradle-home-cache-cleanup: true
+          gradle-executable: /usr/bin/time
+          arguments: -v ./gradlew app:assembleRelease -PversionName=${{ env.VERSION_NAME }} --stacktrace 
 
       - name: Create signed APKs
         id: sign_app
