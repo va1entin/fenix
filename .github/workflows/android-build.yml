@@ -21,7 +21,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v1
         with:
           java-version: 11
 
@@ -32,7 +32,7 @@ jobs:
         run: echo "VERSION_NAME=$(git describe --tags HEAD | sed 's/^v//')" >> $GITHUB_ENV
 
       - name: Build variant of app, try again if it fails
-        run: (echo "==== Gradle Build Attempt 1 ====" && ./gradlew app:assembleRelease -Dorg.gradle.jvmargs=-Xmx2G -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Attempt 2 ====" && ./gradlew app:assembleRelease -Dorg.gradle.jvmargs=-Xmx2G -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Step Failed ====" && exit 1)
+        run: (echo "==== Gradle Build Attempt 1 ====" && ./gradlew app:assembleRelease -Dorg.gradle.jvmargs=-Xmx2G -PversionName=$VERSION_NAME --warning-mode=all) || (echo "==== Gradle Build Attempt 2 ====" && ./gradlew app:assembleRelease -Dorg.gradle.jvmargs=-Xmx2G -PversionName=$VERSION_NAME --warning-mode=all) || (echo "==== Gradle Build Step Failed ====" && exit 1)
 
       - name: Create signed APKs
         id: sign_app
