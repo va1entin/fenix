@@ -1,0 +1,64 @@
+# Adapted from Iceraven workflows
+# https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/android-build.yml
+# https://github.com/fork-maintainers/iceraven-browser/blob/fork/.github/workflows/release-automation.yml
+#
+name: Android build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '1*'
+
+jobs:
+  run-build:
+    runs-on: ubuntu-latest
+    if: "contains(toJSON(github.ref_type), 'branch')"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+
+      - name: Install Android SDK with pieces Gradle skips
+        run: ./automation/install-sdk.sh
+
+      - name: Create version name
+        run: echo "VERSION_NAME=$(git describe --tags HEAD | sed 's/^v//')" >> $GITHUB_ENV
+
+      - name: Build variant of app, try again if it fails
+        run: (echo "==== Gradle Build Attempt 1 ====" && ./gradlew app:assembleRelease -Dorg.gradle.jvmargs=-Xmx2G -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Attempt 2 ====" && ./gradlew app:assembleRelease -Dorg.gradle.jvmargs=-Xmx2G -PversionName=$VERSION_NAME) || (echo "==== Gradle Build Step Failed ====" && exit 1)
+
+      - name: Create signed APKs
+        id: sign_app
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/release/
+          signingKeyBase64: ${{ secrets.SIGNING_KEY_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEYSTORE_PASSWORD }}
+
+      - name: List outputs after signing
+        run: find /home/runner/ -name '*.apk' || true
+
+      - name: Fix signed APK filenames
+        run: cd app/build/outputs/apk/release && mv app-arm64-v8a-release-unsigned-signed.apk app-${{ github.ref_name }}-arm64-v8a-release-signed.apk && mv app-armeabi-v7a-release-unsigned-signed.apk app-${{ github.ref_name }}-armeabi-v7a-release-signed.apk && mv app-x86-release-unsigned-signed.apk app-${{ github.ref_name }}-x86-release-signed.apk && mv app-x86_64-release-unsigned-signed.apk app-${{ github.ref_name }}-x86_64-release-signed.apk
+
+      - name: Upload apk artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: app/build/outputs/apk/release/app-*-release-signed.apk
+
+      - name: Create tag
+        id: create_tag
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.TAG_CREATION_TOKEN }}
+          release_branches: ${{ github.ref_name }}
+          custom_tag: ${{ github.ref_name }}
